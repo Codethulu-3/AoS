@@ -43,7 +43,7 @@ public class Level {
     
     public void initEntities(){
         entityManager.addEntity(new Unit1(handler, Unit.PLAYER_SIDE, 3, 4));
-        entityManager.addEntity(new Unit1(handler, Unit.PLAYER_SIDE, 4, 4));
+        //entityManager.addEntity(new Unit1(handler, Unit.PLAYER_SIDE, 4, 4));
         entityManager.addEntity(new Unit1(handler, Unit.ENEMY_SIDE, 5, 6));
         entityManager.getEntities().get(0).giveWeapon(new Pistol());
     }

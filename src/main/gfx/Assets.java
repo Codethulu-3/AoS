@@ -18,9 +18,14 @@ public class Assets {
     public static BufferedImage buttonBottom, buttonBottomHighlight;
     public static BufferedImage buttonMiddle, buttonMiddleHighlight;
     
+    public static final int arrowWidth = 32, arrowHeight = 32;
+    public static BufferedImage arrowUp, arrowLeft, arrowRight, arrowDown;
+    public static BufferedImage arrowUp_Down, arrowLeft_Right;
+    
     public static void init() {
         SpriteSheet tiles = new SpriteSheet(ImageLoader.loadImage("/textures/tiles.png"));
         SpriteSheet buttons = new SpriteSheet(ImageLoader.loadImage("/textures/menuButton.png"));
+        SpriteSheet arrows = new SpriteSheet(ImageLoader.loadImage("/textures/arrows.png"));
         
         water = easyLoad(tiles, 1, 0);
         grass = easyLoad(tiles, 0, 0);
@@ -35,7 +40,8 @@ public class Assets {
         buttonBottomHighlight = buttons.crop(buttonWidth * 2, buttonHeight, buttonWidth, buttonHeight);
         buttonMiddle = buttons.crop(buttonWidth, 0, buttonWidth, buttonHeight);
         buttonMiddleHighlight = buttons.crop(buttonWidth * 2, buttonHeight, buttonWidth, buttonHeight);
-
+        
+        
     }
     
     private static BufferedImage easyLoad(SpriteSheet sheet, int x, int y){

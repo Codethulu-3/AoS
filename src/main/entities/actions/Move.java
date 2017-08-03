@@ -69,7 +69,7 @@ public class Move extends Action {
                 }
             }
         }
-        highlights.remove(handler.getLevel().getTileAt(unit.getWorldX(), unit.getWorldY()));
+        //highlights.remove(handler.getLevel().getTileAt(unit.getWorldX(), unit.getWorldY()));
     }
     
     @Override

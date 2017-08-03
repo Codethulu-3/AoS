@@ -1,6 +1,8 @@
 package main.entities;
 
 import java.awt.Graphics;
+import java.awt.Point;
+import javafx.scene.shape.Line;
 import main.Handler;
 import main.combat.Weapon;
 import static main.entities.Entity.DEFAULT_HEIGHT;
@@ -8,6 +10,7 @@ import static main.entities.Entity.DEFAULT_WIDTH;
 import main.entities.actions.Action;
 import main.entities.actions.Move;
 import main.entities.actions.Shoot;
+import main.tiles.Tile;
 import main.ui.MiniMenu;
 
 /**
@@ -32,6 +35,8 @@ public class Unit extends Entity {
     
     private MiniMenu miniMenu;
     
+    private Line[][][] lines;
+    
     public Unit(Handler handler, int side, int worldX, int worldY, int width, int height, int health, int moveRange) {
         super(handler, worldX, worldY, width, height);
         this.health = health;
@@ -40,6 +45,7 @@ public class Unit extends Entity {
         shoot = new Shoot(handler, this);
         this.side = side;
         miniMenu = new MiniMenu(handler, this);
+        lines = new Line[handler.getLevel().getTiles().length][handler.getLevel().getTiles()[0].length][4];
     }
 
     @Override
@@ -57,13 +63,47 @@ public class Unit extends Entity {
             //System.out.println("shooting");
            // shoot.update();
         }
-
+        if(side == PLAYER_SIDE){
+            for(int r = 0; r < handler.getLevel().getTiles().length; r++){
+                for(int c = 0; c < handler.getLevel().getTiles()[0].length; c++){
+                    if(handler.getLevel().getTileAt(r, c).isBlocked() && !handler.getLevel().getTileAt(r, c).surrounded()){
+                        lines[r][c][0] = new Line(worldX * Tile.TILEWIDTH + (DEFAULT_WIDTH / 2), worldY * Tile.TILEHEIGHT + (DEFAULT_HEIGHT / 2), 
+                            handler.getLevel().getTileAt(r, c).getWorldX() * Tile.TILEWIDTH, 
+                            handler.getLevel().getTileAt(r, c).getWorldY() * Tile.TILEHEIGHT);
+                    }
+                }
+            }
+            /*
+            int i=0;
+            for(Tile[] t: handler.getLevel().getTiles()){
+                for(Tile s: t){
+                    lines[i][0] = new Line(screenX, screenY, s.getWorldX() * (i * Tile.TILEWIDTH), s.getWorldY() * ( Tile.TILEWIDTH));
+                }
+                i++;
+            }*/
+        }
     }
     
     @Override
     public void render(Graphics g) {
         if(!moveable && active){
             miniMenu.render(g, (int)screenX, (int)screenY);
+        }
+        if(side == PLAYER_SIDE){
+            
+            for(int r = 0; r < handler.getLevel().getTiles().length; r++){
+                for(int c = 0; c < handler.getLevel().getTiles()[0].length; c++){
+                    if(lines[r][c][0]!=null)
+                    g.drawLine((int)lines[r][c][0].getStartX(), (int)lines[r][c][0].getStartY(),
+                            (int) lines[r][c][0].getEndX(),(int) lines[r][c][0].getEndY());
+                }
+            }
+            /*
+            int i = 0;
+            for(Tile[] t: handler.getLevel().getTiles()){
+                g.drawLine((int)lines[i][][0].getStartX(), (int)lines[i][0].getStartY(),(int) lines[i][0].getEndX(),(int) lines[i][0].getEndY());
+                i++;
+            }*/
         }
     }
     

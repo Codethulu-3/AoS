@@ -17,6 +17,7 @@ public class Unit1 extends Unit {
     @Override
     public void render(Graphics g) {
         super.render(g);
+        drawEffects(g);
         if(side == PLAYER_SIDE){
             if(active){
                 g.setColor(Color.blue);
@@ -27,6 +28,5 @@ public class Unit1 extends Unit {
             g.setColor(Color.red);
         }
         g.fillRect((int)(screenX), (int)(screenY), width, height);
-        drawEffects(g);
     }
 }
