@@ -92,4 +92,7 @@ public abstract class Tile {
     
     public int getWorldX() {return worldX;}
     public int getWorldY() {return worldY;}
+    
+    public float getScreenX(){return screenX;}
+    public float getScreenY(){return screenY;}
 }

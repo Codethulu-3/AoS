@@ -5,7 +5,9 @@ import main.tiles.TileID;
 import main.tiles.GrassTile;
 import main.tiles.Tile;
 import java.awt.Graphics;
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
+import javafx.scene.shape.Line;
 import main.Handler;
 import main.combat.Pistol;
 import main.entities.Entity;
@@ -23,27 +25,31 @@ public class Level {
 
     private Handler handler;
     
-    private int width, height;
-    private int spawnX, spawnY;
-    
-    private Tile[][] tiles;
-    
     private Camera camera;
     
     private EntityManager entityManager;
     private AStarPathfinding aStarPathfinding;
     
+    private int width, height;
+    private int spawnX, spawnY;
+    
+    private Tile[][] tiles;
+    
+    private ArrayList<Line2D> lines;
+    
     public Level(Handler handler, String path) {
         this.handler = handler;
+        
         camera = new Camera(handler);
         entityManager = new EntityManager(handler);
         loadWorld(path);
         aStarPathfinding = new AStarPathfinding(this);
+        
+        lines = new ArrayList();
     }
     
     public void initEntities(){
         entityManager.addEntity(new Unit1(handler, Unit.PLAYER_SIDE, 3, 4));
-        //entityManager.addEntity(new Unit1(handler, Unit.PLAYER_SIDE, 4, 4));
         entityManager.addEntity(new Unit1(handler, Unit.ENEMY_SIDE, 5, 6));
         entityManager.getEntities().get(0).giveWeapon(new Pistol());
     }
@@ -60,6 +66,9 @@ public class Level {
         renderMap(g);
         entityManager.render(g);
         camera.updateCamera(g);
+        for(Line2D l: lines){
+            g.drawLine((int)l.getX1(), (int)l.getY1(), (int)l.getX2(), (int)l.getY2());
+        }
     }
     
     private void renderMap(Graphics g){
@@ -107,6 +116,8 @@ public class Level {
             }
         }
     }
+    
+    //helper methods
     
     public boolean unitAt(int worldX, int worldY){
         for(Entity e: entityManager.getEntities()){
@@ -160,6 +171,26 @@ public class Level {
         return walkableNeighbors;
     }
     
+    public void calcLines(Unit unit){
+        lines.clear();
+        for(int r = 0; r < tiles.length; r++){
+            for(int c = 0; c < tiles[0].length; c++){
+                Tile curTile = tiles[r][c];
+                if(curTile.isBlocked()){
+                    if(curTile.getWorldX() == unit.getWorldX() && curTile.getWorldY() == unit.getWorldY()){
+                        System.out.println("sdkfj");
+                    } else {
+                    int startX = curTile.getWorldX() * Tile.TILEWIDTH;
+                    int startY = curTile.getWorldY() * Tile.TILEHEIGHT;
+                    lines.add(new Line2D.Float(startX, startY, startX, startY + Tile.TILEHEIGHT));
+                    lines.add(new Line2D.Float(startX, startY, startX + Tile.TILEWIDTH, startY));
+                    lines.add(new Line2D.Float(startX, startY + Tile.TILEHEIGHT, startX + Tile.TILEWIDTH, startY + Tile.TILEHEIGHT));
+                    lines.add(new Line2D.Float(startX + Tile.TILEWIDTH, startY, startX + Tile.TILEWIDTH, startY + Tile.TILEHEIGHT));
+                    }
+                }
+            }
+        }
+    }
     //getters
     public int getWidth() {return width;}
     public int getHeight() {return height;}
@@ -169,4 +200,6 @@ public class Level {
     public Camera getCamera(){return camera;}
     
     public AStarPathfinding getPathing() {return aStarPathfinding;}
+    
+    public ArrayList getLines(){return lines;}
 }

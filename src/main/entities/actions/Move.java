@@ -34,6 +34,7 @@ public class Move extends Action {
                 unit.setWorldY(hoveredTile.getWorldY());
                 handler.getLevel().getTileAt(unit.getWorldX(), unit.getWorldY()).setBlocked(true);
                 unit.moveable = false;
+                unit.calcLines();
             }
         }
     }

@@ -2,14 +2,16 @@ package main.entities;
 
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.geom.Line2D;
+import java.util.ArrayList;
+import javafx.geometry.Bounds;
 import javafx.scene.shape.Line;
 import main.Handler;
-import main.combat.Weapon;
 import static main.entities.Entity.DEFAULT_HEIGHT;
 import static main.entities.Entity.DEFAULT_WIDTH;
 import main.entities.actions.Action;
 import main.entities.actions.Move;
-import main.entities.actions.Shoot;
 import main.tiles.Tile;
 import main.ui.MiniMenu;
 
@@ -26,8 +28,6 @@ public class Unit extends Entity {
     public boolean moveable=true;
     public boolean active=true;
     
-    protected Action shoot;
-    public boolean shooting = false;
     
     protected int side;
     public static int PLAYER_SIDE = 1;
@@ -35,17 +35,22 @@ public class Unit extends Entity {
     
     private MiniMenu miniMenu;
     
-    private Line[][][] lines;
+    private ArrayList<Line2D> lines;
+    
     
     public Unit(Handler handler, int side, int worldX, int worldY, int width, int height, int health, int moveRange) {
         super(handler, worldX, worldY, width, height);
+        
         this.health = health;
         this.moveRange = moveRange;
-        move = new Move(handler, this);
-        shoot = new Shoot(handler, this);
         this.side = side;
+        
+        move = new Move(handler, this);
         miniMenu = new MiniMenu(handler, this);
-        lines = new Line[handler.getLevel().getTiles().length][handler.getLevel().getTiles()[0].length][4];
+        lines = new ArrayList();
+        if(side == PLAYER_SIDE){
+            calcLines();
+        }
     }
 
     @Override
@@ -59,29 +64,6 @@ public class Unit extends Entity {
         if(!moveable && active){
             miniMenu.update((int)screenX, (int)screenY);
         }
-        if(shooting){
-            //System.out.println("shooting");
-           // shoot.update();
-        }
-        if(side == PLAYER_SIDE){
-            for(int r = 0; r < handler.getLevel().getTiles().length; r++){
-                for(int c = 0; c < handler.getLevel().getTiles()[0].length; c++){
-                    if(handler.getLevel().getTileAt(r, c).isBlocked() && !handler.getLevel().getTileAt(r, c).surrounded()){
-                        lines[r][c][0] = new Line(worldX * Tile.TILEWIDTH + (DEFAULT_WIDTH / 2), worldY * Tile.TILEHEIGHT + (DEFAULT_HEIGHT / 2), 
-                            handler.getLevel().getTileAt(r, c).getWorldX() * Tile.TILEWIDTH, 
-                            handler.getLevel().getTileAt(r, c).getWorldY() * Tile.TILEHEIGHT);
-                    }
-                }
-            }
-            /*
-            int i=0;
-            for(Tile[] t: handler.getLevel().getTiles()){
-                for(Tile s: t){
-                    lines[i][0] = new Line(screenX, screenY, s.getWorldX() * (i * Tile.TILEWIDTH), s.getWorldY() * ( Tile.TILEWIDTH));
-                }
-                i++;
-            }*/
-        }
     }
     
     @Override
@@ -90,20 +72,9 @@ public class Unit extends Entity {
             miniMenu.render(g, (int)screenX, (int)screenY);
         }
         if(side == PLAYER_SIDE){
-            
-            for(int r = 0; r < handler.getLevel().getTiles().length; r++){
-                for(int c = 0; c < handler.getLevel().getTiles()[0].length; c++){
-                    if(lines[r][c][0]!=null)
-                    g.drawLine((int)lines[r][c][0].getStartX(), (int)lines[r][c][0].getStartY(),
-                            (int) lines[r][c][0].getEndX(),(int) lines[r][c][0].getEndY());
-                }
+            for(Line2D l: lines){
+                g.drawLine((int)l.getX1(), (int)l.getY1(), (int)l.getX2(), (int)l.getY2());
             }
-            /*
-            int i = 0;
-            for(Tile[] t: handler.getLevel().getTiles()){
-                g.drawLine((int)lines[i][][0].getStartX(), (int)lines[i][0].getStartY(),(int) lines[i][0].getEndX(),(int) lines[i][0].getEndY());
-                i++;
-            }*/
         }
     }
     
@@ -148,7 +119,51 @@ public class Unit extends Entity {
         }
     }
     
-
+    public void calcLines() {
+        lines.clear();
+        handler.getLevel().calcLines(this);
+        for (int r = 0; r < handler.getLevel().getTiles().length; r++) {
+            for (int c = 0; c < handler.getLevel().getTiles()[0].length; c++) {
+                if (handler.getLevel().getTileAt(r, c).isBlocked() && !handler.getLevel().getTileAt(r, c).surrounded()) {
+                    int realX = handler.getLevel().getTileAt(r, c).getWorldX() * Tile.TILEWIDTH;
+                    int realY = handler.getLevel().getTileAt(r, c).getWorldY() * Tile.TILEHEIGHT;
+                    for(int i = 0; i < 4; i++){
+                        Line2D line;
+                        switch(i){
+                            case 0:
+                                line = new Line2D.Float(worldX * Tile.TILEWIDTH + (DEFAULT_WIDTH / 2),
+                                        worldY * Tile.TILEHEIGHT + (DEFAULT_HEIGHT / 2), realX, realY);
+                                break;
+                            case 1:
+                                line = new Line2D.Float(worldX * Tile.TILEWIDTH + (DEFAULT_WIDTH / 2),
+                                        worldY * Tile.TILEHEIGHT + (DEFAULT_HEIGHT / 2), realX + Tile.TILEWIDTH, realY);
+                                break;
+                            case 2:
+                                line = new Line2D.Float(worldX * Tile.TILEWIDTH + (DEFAULT_WIDTH / 2),
+                                        worldY * Tile.TILEHEIGHT + (DEFAULT_HEIGHT / 2), realX, realY + Tile.TILEHEIGHT);
+                                break;
+                            default:
+                                line = new Line2D.Float(worldX * Tile.TILEWIDTH + (DEFAULT_WIDTH / 2),
+                                        worldY * Tile.TILEHEIGHT + (DEFAULT_HEIGHT / 2), realX + Tile.TILEWIDTH, realY + Tile.TILEHEIGHT);
+                                break;
+                        }
+                        int crosses = 0;
+                        ArrayList<Line2D> mapLines = handler.getLevel().getLines();
+                        for (int j = 0; j < handler.getLevel().getLines().size(); j++) {
+                            if (line.intersectsLine(mapLines.get(j))) {
+                                crosses++;
+                            }
+                        }
+                        if(crosses < 4){
+                            lines.add(line);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    //getters & setters
     public int getMoveRange() {return moveRange;}
     public int getSide(){return side;}
     

@@ -30,7 +30,6 @@ public class Shoot extends Action{
             if(handler.getMouseManager().getLeftClicked()){
                 unit.attack(handler.getLevel().getUnitAt(hoveredTile.getWorldX(), hoveredTile.getWorldY()));
                 unit.active = false;
-                unit.shooting = false;
             }
         }
     }

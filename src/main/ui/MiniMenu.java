@@ -53,7 +53,6 @@ public class MiniMenu {
             unit.active = false;
         }
         if(attackButton.click()){
-            unit.shooting = true;
         }           
     }
     
