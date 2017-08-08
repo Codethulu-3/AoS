@@ -67,7 +67,8 @@ public class Level {
         entityManager.render(g);
         camera.updateCamera(g);
         for(Line2D l: lines){
-            g.drawLine((int)l.getX1(), (int)l.getY1(), (int)l.getX2(), (int)l.getY2());
+            g.drawLine((int)l.getX1() - (int)camera.getxOffset(), (int)l.getY1() - (int)camera.getyOffset(), 
+                    (int)l.getX2() - (int)camera.getxOffset(), (int)l.getY2() - (int)camera.getyOffset());
         }
     }
     
@@ -173,6 +174,7 @@ public class Level {
     
     public void calcLines(Unit unit){
         lines.clear();
+        getTileAt(unit.getWorldX(),unit.getWorldY()).setBlocked(false);
         for(int r = 0; r < tiles.length; r++){
             for(int c = 0; c < tiles[0].length; c++){
                 Tile curTile = tiles[r][c];
@@ -180,16 +182,17 @@ public class Level {
                     if(curTile.getWorldX() == unit.getWorldX() && curTile.getWorldY() == unit.getWorldY()){
                         System.out.println("sdkfj");
                     } else {
-                    int startX = curTile.getWorldX() * Tile.TILEWIDTH;
-                    int startY = curTile.getWorldY() * Tile.TILEHEIGHT;
-                    lines.add(new Line2D.Float(startX, startY, startX, startY + Tile.TILEHEIGHT));
-                    lines.add(new Line2D.Float(startX, startY, startX + Tile.TILEWIDTH, startY));
-                    lines.add(new Line2D.Float(startX, startY + Tile.TILEHEIGHT, startX + Tile.TILEWIDTH, startY + Tile.TILEHEIGHT));
-                    lines.add(new Line2D.Float(startX + Tile.TILEWIDTH, startY, startX + Tile.TILEWIDTH, startY + Tile.TILEHEIGHT));
+                        int startX = curTile.getWorldX() * Tile.TILEWIDTH;
+                        int startY = curTile.getWorldY() * Tile.TILEHEIGHT;
+                        lines.add(new Line2D.Float(startX, startY, startX, startY + Tile.TILEHEIGHT));
+                        lines.add(new Line2D.Float(startX, startY, startX + Tile.TILEWIDTH, startY));
+                        lines.add(new Line2D.Float(startX, startY + Tile.TILEHEIGHT, startX + Tile.TILEWIDTH, startY + Tile.TILEHEIGHT));
+                        lines.add(new Line2D.Float(startX + Tile.TILEWIDTH, startY, startX + Tile.TILEWIDTH, startY + Tile.TILEHEIGHT));
                     }
                 }
             }
         }
+        getTileAt(unit.getWorldX(),unit.getWorldY()).setBlocked(true);
     }
     //getters
     public int getWidth() {return width;}

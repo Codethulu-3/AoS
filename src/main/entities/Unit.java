@@ -73,7 +73,10 @@ public class Unit extends Entity {
         }
         if(side == PLAYER_SIDE){
             for(Line2D l: lines){
-                g.drawLine((int)l.getX1(), (int)l.getY1(), (int)l.getX2(), (int)l.getY2());
+                g.drawLine((int)l.getX1() - (int)handler.getLevel().getCamera().getxOffset(),
+                        (int)l.getY1() - (int)handler.getLevel().getCamera().getyOffset(),
+                        (int)l.getX2() - (int)handler.getLevel().getCamera().getxOffset(),
+                        (int)l.getY2() - (int)handler.getLevel().getCamera().getyOffset());
             }
         }
     }
@@ -124,38 +127,42 @@ public class Unit extends Entity {
         handler.getLevel().calcLines(this);
         for (int r = 0; r < handler.getLevel().getTiles().length; r++) {
             for (int c = 0; c < handler.getLevel().getTiles()[0].length; c++) {
-                if (handler.getLevel().getTileAt(r, c).isBlocked() && !handler.getLevel().getTileAt(r, c).surrounded()) {
-                    int realX = handler.getLevel().getTileAt(r, c).getWorldX() * Tile.TILEWIDTH;
-                    int realY = handler.getLevel().getTileAt(r, c).getWorldY() * Tile.TILEHEIGHT;
-                    for(int i = 0; i < 4; i++){
-                        Line2D line;
-                        switch(i){
-                            case 0:
-                                line = new Line2D.Float(worldX * Tile.TILEWIDTH + (DEFAULT_WIDTH / 2),
-                                        worldY * Tile.TILEHEIGHT + (DEFAULT_HEIGHT / 2), realX, realY);
-                                break;
-                            case 1:
-                                line = new Line2D.Float(worldX * Tile.TILEWIDTH + (DEFAULT_WIDTH / 2),
-                                        worldY * Tile.TILEHEIGHT + (DEFAULT_HEIGHT / 2), realX + Tile.TILEWIDTH, realY);
-                                break;
-                            case 2:
-                                line = new Line2D.Float(worldX * Tile.TILEWIDTH + (DEFAULT_WIDTH / 2),
-                                        worldY * Tile.TILEHEIGHT + (DEFAULT_HEIGHT / 2), realX, realY + Tile.TILEHEIGHT);
-                                break;
-                            default:
-                                line = new Line2D.Float(worldX * Tile.TILEWIDTH + (DEFAULT_WIDTH / 2),
-                                        worldY * Tile.TILEHEIGHT + (DEFAULT_HEIGHT / 2), realX + Tile.TILEWIDTH, realY + Tile.TILEHEIGHT);
-                                break;
-                        }
-                        int crosses = 0;
-                        ArrayList<Line2D> mapLines = handler.getLevel().getLines();
-                        for (int j = 0; j < handler.getLevel().getLines().size(); j++) {
-                            if (line.intersectsLine(mapLines.get(j))) {
-                                crosses++;
+                if (handler.getLevel().getTileAt(r, c).isBlocked() && !handler.getLevel().getTileAt(r, c).surrounded() ) {
+                    if(r == worldX && c == worldY){
+                        System.out.println("dslfkh");
+                    } else {
+                        int realX = handler.getLevel().getTileAt(r, c).getWorldX() * Tile.TILEWIDTH;
+                        int realY = handler.getLevel().getTileAt(r, c).getWorldY() * Tile.TILEHEIGHT;
+                        for (int i = 0; i < 4; i++) {
+                            Line2D line;
+                            switch (i) {
+                                case 0:
+                                    line = new Line2D.Float(worldX * Tile.TILEWIDTH + (DEFAULT_WIDTH / 2),
+                                            worldY * Tile.TILEHEIGHT + (DEFAULT_HEIGHT / 2), realX, realY);
+                                    break;
+                                case 1:
+                                    line = new Line2D.Float(worldX * Tile.TILEWIDTH + (DEFAULT_WIDTH / 2),
+                                            worldY * Tile.TILEHEIGHT + (DEFAULT_HEIGHT / 2), realX + Tile.TILEWIDTH, realY);
+                                    break;
+                                case 2:
+                                    line = new Line2D.Float(worldX * Tile.TILEWIDTH + (DEFAULT_WIDTH / 2),
+                                            worldY * Tile.TILEHEIGHT + (DEFAULT_HEIGHT / 2), realX, realY + Tile.TILEHEIGHT);
+                                    break;
+                                default:
+                                    line = new Line2D.Float(worldX * Tile.TILEWIDTH + (DEFAULT_WIDTH / 2),
+                                            worldY * Tile.TILEHEIGHT + (DEFAULT_HEIGHT / 2), realX + Tile.TILEWIDTH, realY + Tile.TILEHEIGHT);
+                                    break;
                             }
-                        }
-                        if(crosses < 4){
-                            lines.add(line);
+                            int crosses = 0;
+                            ArrayList<Line2D> mapLines = handler.getLevel().getLines();
+                            for (int j = 0; j < handler.getLevel().getLines().size(); j++) {
+                                if (line.intersectsLine(mapLines.get(j))) {
+                                    crosses++;
+                                }
+                            }
+                            if (crosses < 4) {
+                                lines.add(line);
+                            }
                         }
                     }
                 }
