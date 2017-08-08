@@ -160,7 +160,12 @@ public class Unit extends Entity {
                                     crosses++;
                                 }
                             }
-                            if (crosses < 4) {
+                            int surrondings = handler.getLevel().getTileAt(r, c).getBlockedSurroundings();
+                            if(surrondings == 2 && crosses < 4){
+                                lines.add(line);
+                            } else if(surrondings == 3 && crosses < 5){
+                                lines.add(line);
+                            } else if(surrondings == 4 && crosses < 6){
                                 lines.add(line);
                             }
                         }

@@ -180,7 +180,6 @@ public class Level {
                 Tile curTile = tiles[r][c];
                 if(curTile.isBlocked()){
                     if(curTile.getWorldX() == unit.getWorldX() && curTile.getWorldY() == unit.getWorldY()){
-                        System.out.println("sdkfj");
                     } else {
                         int startX = curTile.getWorldX() * Tile.TILEWIDTH;
                         int startY = curTile.getWorldY() * Tile.TILEHEIGHT;

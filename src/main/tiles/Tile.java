@@ -66,8 +66,45 @@ public abstract class Tile {
         return false;
     }
     
-    public boolean intersects(Line l){
-        return false;
+    public int getBlockedSurroundings(){
+        int amount = 0;
+        for(int i = 0; i < 4; i++){
+            switch(i){
+                case 0:
+                    if(handler.getLevel().outOfBounds(worldX + 1, worldY)){
+                        amount++;
+                        break;
+                    } else if(handler.getLevel().getTileAt(worldX + 1, worldY).isBlocked()){
+                        amount++;
+                    }
+                    break;
+                case 1:
+                    if(handler.getLevel().outOfBounds(worldX - 1, worldY)){
+                        amount++;
+                        break;
+                    } else if(handler.getLevel().getTileAt(worldX - 1, worldY).isBlocked()){
+                        amount++;
+                    }
+                    break;
+                case 2:
+                    if(handler.getLevel().outOfBounds(worldX, worldY + 1)){
+                        amount++;
+                        break;
+                    } else if(handler.getLevel().getTileAt(worldX, worldY + 1).isBlocked()){
+                        amount++;
+                    }
+                    break;
+                case 3:
+                    if(handler.getLevel().outOfBounds(worldX, worldY - 1)){
+                        amount++;
+                        break;
+                    } else if(handler.getLevel().getTileAt(worldX, worldY - 1).isBlocked()){
+                        amount++;
+                    }
+                    break;
+            }
+        }
+        return amount;
     }
     
     public void onMouseEnter() {
