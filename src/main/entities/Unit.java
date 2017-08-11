@@ -127,9 +127,8 @@ public class Unit extends Entity {
         handler.getLevel().calcLines(this);
         for (int r = 0; r < handler.getLevel().getTiles().length; r++) {
             for (int c = 0; c < handler.getLevel().getTiles()[0].length; c++) {
-                if (handler.getLevel().getTileAt(r, c).isBlocked() && !handler.getLevel().getTileAt(r, c).surrounded() ) {
+                if (handler.getLevel().getTileAt(r, c).isBlocked()) {
                     if(r == worldX && c == worldY){
-                        System.out.println("dslfkh");
                     } else {
                         int realX = handler.getLevel().getTileAt(r, c).getWorldX() * Tile.TILEWIDTH;
                         int realY = handler.getLevel().getTileAt(r, c).getWorldY() * Tile.TILEHEIGHT;
@@ -169,13 +168,16 @@ public class Unit extends Entity {
                                 lines.add(line);
                             } else if(surrondings == 3 && crosses < 5){
                                 lines.add(line);
-                            } else if(surrondings == 4 && crosses < 6){
+                            } else if(surrondings == 4 && crosses < 7){
                                 lines.add(line);
                             }
                         }
                     }
                 }
             }
+        }
+        for(Line2D l: lines){
+            
         }
     }
     
